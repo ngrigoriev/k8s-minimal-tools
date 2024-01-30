@@ -1,0 +1,62 @@
+# Makes a release of rsyslogd-forwarder
+#
+
+name: release-rsyslogd-forwarder
+run-name: ${{ github.actor }} is preparing release of rsyslogd-forwarder
+on:
+  push:
+    branches:
+      - "master"
+    tags:
+      - "rsyslogd-forwarder-v*"
+
+env:
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/rsyslogd-forwarder
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+#         - linux/arm/v6
+#         - linux/arm/v7
+#         - linux/arm64
+    steps:
+      - name: Prepare
+        run: |
+          platform=${{ matrix.platform }}
+          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.3.0
+      - name: Check Cosign install!
+        run: cosign version
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@v3.0.0
+        with:
+          registry: {{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5.5.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Build and push
+        uses: docker/build-push-action@v5.1.0
+        with:
+          context: docker/rsyslogd-forwarder
+          platforms: ${{ matrix.platform }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          push: true
