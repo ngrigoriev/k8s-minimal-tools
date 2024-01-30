@@ -4,6 +4,7 @@
 name: release-rsyslogd-forwarder
 run-name: ${{ github.actor }} is preparing release of rsyslogd-forwarder
 on:
+  workflow_dispatch:
   push:
     branches:
       - "master"
