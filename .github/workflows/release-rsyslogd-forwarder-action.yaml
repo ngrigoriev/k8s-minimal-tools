@@ -6,8 +6,6 @@ run-name: ${{ github.actor }} is preparing release of rsyslogd-forwarder
 on:
   workflow_dispatch:
   push:
-    branches:
-      - "master"
     tags:
       - "rsyslogd-forwarder-v*"
 
@@ -53,6 +51,11 @@ jobs:
         uses: docker/metadata-action@v5.5.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          flavor: |
+            latest=true
+          tags: |
+            type=match,pattern=rsyslogd-forwarder-\(v*\),group=1
+
       - name: Build and push
         uses: docker/build-push-action@v5.1.0
         with:
@@ -61,3 +64,9 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           push: true
+
+      - name: Sign the published Docker image
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+          DIGEST: ${{ steps.build-and-push.outputs.digest }}
+        run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
