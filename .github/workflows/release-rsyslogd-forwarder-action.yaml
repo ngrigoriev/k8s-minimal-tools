@@ -28,9 +28,9 @@ jobs:
       matrix:
         platform:
           - linux/amd64
+          - linux/arm64
 #         - linux/arm/v6
 #         - linux/arm/v7
-#         - linux/arm64
     steps:
       - name: Prepare
         run: |
@@ -74,5 +74,4 @@ jobs:
       - name: Sign the published Docker image
         env:
           TAGS: ${{ steps.meta.outputs.tags }}
-          DIGEST: ${{ steps.build-and-push.outputs.digest }}
-        run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+        run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}
