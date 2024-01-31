@@ -29,7 +29,7 @@ RUN ./configure --disable-largefile \
 --prefix=/usr \
 --sysconfdir=/etc/rsyslogd
 
-RUN make && make install prefix=/usr/src/rsyslog/dist
+RUN make && strip tools/rsyslogd && make install prefix=/usr/src/rsyslog/dist
 # copy native libraries needed by the binary
 RUN mkdir -p dist/lib && cp $(ldd dist/sbin/rsyslogd | grep '=>' | grep -v 'lib[cm]' | awk '{print $3}') dist/lib
 
