@@ -1,0 +1,2 @@
+# Add the tftproot and remote IP address as a folder on the front of all requests.
+r ^ /tftproot/\i/

@@ -1,0 +1,13 @@
+diff --git a/configure.in b/configure.in
+index 7ab7c5a..5211286 100644
+--- a/configure.in
++++ b/configure.in
+@@ -126,8 +126,6 @@ AC_CHECK_FUNCS(recvmsg)
+ AC_CHECK_FUNCS(ftruncate)
+ AC_CHECK_FUNCS(setreuid)
+ AC_CHECK_FUNCS(setregid)
+-AC_CHECK_FUNCS(initgroups)
+-AC_CHECK_FUNCS(setgroups)
+ 
+ dnl Solaris 8 has [u]intmax_t but not strtoumax().  How utterly braindamaged.
+ AC_CHECK_FUNCS(strtoumax)
